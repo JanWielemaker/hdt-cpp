@@ -54,7 +54,7 @@ CSD_FMIndex::CSD_FMIndex(hdt::IteratorUCharString *it, bool sparse_bitsequence,
 
   this->type = FMINDEX;
   string element;
-  unsigned char *text;
+  unsigned char *text; // TODO: std::vector<unsigned char>
   uint *bitmap = 0;
   // uint32_t *bitmap = 0;
 
@@ -90,7 +90,7 @@ CSD_FMIndex::CSD_FMIndex(hdt::IteratorUCharString *it, bool sparse_bitsequence,
     // Checking the current size of the encoded
     // sequence: realloc if necessary
     if ((total + currentLength + 1) > reservedSize) {
-      while (((size_t)total + currentLength + 1) > reservedSize) {
+      while ((total + currentLength + 1) > reservedSize) {
         reservedSize <<= 1;
         if (reservedSize == 0) {
           reservedSize = ((size_t)total + currentLength) * 2;
@@ -99,7 +99,7 @@ CSD_FMIndex::CSD_FMIndex(hdt::IteratorUCharString *it, bool sparse_bitsequence,
       text =
           (unsigned char *)realloc(text, reservedSize * sizeof(unsigned char));
     }
-    strncpy((char *)(text + total), (char *)currentStr, currentLength);
+    strncpy((char *)(text + total), (char *)currentStr, reservedSize - total);
 
     total += currentLength;
 
@@ -118,7 +118,7 @@ CSD_FMIndex::CSD_FMIndex(hdt::IteratorUCharString *it, bool sparse_bitsequence,
   textFinal = new char[total + 1];
   //	cout<<"testing:total cpy:"<<total<<endl;
   //	cout<<"testing:text:"<<text<<endl;
-  strncpy((char *)(textFinal), (char *)text, total);
+  strncpy((char *)(textFinal), (char *)text, total + 1);
   textFinal[total] = '\0'; // end of the text
   //	cout<<"testing:textFinal:"<<textFinal<<endl;
 
@@ -149,7 +149,7 @@ CSD_FMIndex::CSD_FMIndex(hdt::IteratorUCharString *it, bool sparse_bitsequence,
     separators = new BitSequenceRG(bitmap, len, 4);
     delete[] bitmap;
   }
-  delete[] text;
+  free(text);
 }
 
 void CSD_FMIndex::build_ssa(unsigned char *text, size_t len,

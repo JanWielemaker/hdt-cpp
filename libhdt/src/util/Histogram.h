@@ -28,7 +28,7 @@ public:
 
 	Histogram() :
 			Start(0), nBins_by_interval(0), nBins(0),
-                    freq(new size_t[0]) {
+			freq(new size_t[1]) { // size_t[0] is undefined behavior
 			reset();
 		}
 
@@ -69,7 +69,7 @@ public:
 		delete[] freq;
 	}
 
-	/** operator=
+  /** operator=
 	 * Set this histogram equal to another.
 	 * @param other Description of the param.
 	 * @return The expected result.
@@ -81,9 +81,9 @@ public:
 			if (nBins != other.nBins) {
 				nBins = other.nBins;
 				delete[] freq;
-                freq = new size_t[nBins];
+				freq = new size_t[nBins];
 			}
-            for (size_t i(0); i < nBins; ++i)
+			for (size_t i(0); i < nBins; ++i)
 				freq[i] = other.freq[i];
 		}
 		return *this;
